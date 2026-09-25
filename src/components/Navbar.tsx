@@ -8,20 +8,23 @@ import {
   Calendar,
   CreditCard,
   FileText,
-  Shield,
+  ShieldCheck,
   ArrowUpRight,
+  FolderArchive,
 } from "lucide-react";
 import { useLegal } from "@/context/LegalContext";
 
 export function Navbar() {
   const pathname = usePathname();
-  const { allHearings, cases } = useLegal();
+  const { allHearings, cases, evidences } = useLegal();
 
   const urgentHearingCount = allHearings.filter((h) => h.isUrgent).length;
 
   const navLinks = [
     { name: "Perkara & Sidang", href: "/", icon: Calendar, badge: urgentHearingCount > 0 ? urgentHearingCount : undefined },
     { name: "Billing & Retainer", href: "/billing/", icon: CreditCard },
+    { name: "Surat Gugatan A4", href: "/pleading/", icon: FileText },
+    { name: "Evidence Vault", href: "/evidence/", icon: FolderArchive, badge: evidences.length },
   ];
 
   return (
@@ -37,7 +40,7 @@ export function Navbar() {
               <div className="flex items-center gap-2">
                 <span className="font-black text-white text-base tracking-wider">LEXJURIST</span>
                 <span className="px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[10px] font-bold">
-                  LEGAL TITAN 14
+                  TITAN 14
                 </span>
               </div>
               <p className="text-[10px] text-slate-400">Enterprise Law Practice ERP &amp; Court Hearing Docket</p>
@@ -46,13 +49,13 @@ export function Navbar() {
         </div>
 
         {/* Navigation */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#080e24] border border-slate-800 text-xs">
-            <span className="text-[10px] text-slate-400 uppercase">Perkara Aktif:</span>
-            <span className="font-black text-amber-400 font-mono">{cases.length} Kasus</span>
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#080e24] border border-slate-800 text-xs mr-2">
+            <span className="text-[10px] text-slate-400 uppercase">Aktif:</span>
+            <span className="font-black text-amber-400 font-mono">{cases.length} Perkara</span>
           </div>
 
-          <nav className="flex items-center gap-1 sm:gap-2">
+          <nav className="flex items-center gap-1 sm:gap-1.5">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href || (link.href !== "/" && pathname?.startsWith(link.href));
@@ -68,7 +71,7 @@ export function Navbar() {
                   }`}
                 >
                   <Icon className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{link.name}</span>
+                  <span className="hidden md:inline">{link.name}</span>
                   {link.badge !== undefined && (
                     <span
                       className={`px-1.5 py-0.2 rounded-full text-[10px] font-black ${

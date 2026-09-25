@@ -18,9 +18,9 @@ export interface CourtHearing {
   id: string;
   caseId: string;
   caseTitle: string;
-  caseNumber: string; // e.g. 142/Pdt.G/2026/PN.Jkt.Pst
-  courtName: string; // e.g. Pengadilan Negeri Jakarta Pusat
-  roomName: string; // e.g. Ruang Wirjono Prodjodikoro
+  caseNumber: string;
+  courtName: string;
+  roomName: string;
   stage: HearingStage;
   scheduledDateIso: string;
   judgePanelLead: string;
@@ -66,4 +66,34 @@ export interface ClientRetainerAccount {
   remainingRetainerBalanceIDR: number;
   replenishmentAlertThresholdIDR: number;
   status: "ADEQUATE" | "NEEDS_REPLENISHMENT" | "EXHAUSTED";
+}
+
+export interface EvidenceItem {
+  id: string;
+  caseId: string;
+  codeNumber: string;
+  title: string;
+  evidenceType: "Akta Otentik (Notariil)" | "Akta Bawah Tangan" | "Bukti Elektronik (Email/Chat)" | "Keterangan Ahli";
+  sourceOriginality: "Asli Diperlihatkan" | "Fotokopi Sesuai Asli (Legalisir)" | "Salinan Elektronik";
+  isNazegelenPaid: boolean;
+  admissibilityStatus: "DITERIMA_HAKIM" | "DALAM_PENELITIAN" | "DITOLAK_EKSEPSI";
+  description: string;
+  custodianAdvocate: string;
+}
+
+export interface LegalPleadingDoc {
+  id: string;
+  caseId: string;
+  documentType: "Gugatan Wanprestasi" | "Memori Replik" | "Jawaban & Eksepsi" | "Kesimpulan Akhir";
+  caseNumber: string;
+  courtDestination: string;
+  plaintiffName: string;
+  plaintiffAdvocates: string[];
+  defendantName: string;
+  positaClauses: string[];
+  petitumClauses: string[];
+  dwangsomAmountIDR: number;
+  conservatoirBeslagAsset: string;
+  submissionDate: string;
+  status: "FILED_OFFICIAL" | "DRAFT_REVIEW";
 }

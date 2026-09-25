@@ -6,6 +6,8 @@ import {
   CourtHearing,
   BillableHourEntry,
   ClientRetainerAccount,
+  EvidenceItem,
+  LegalPleadingDoc,
 } from "@/types/legal";
 
 const INITIAL_CASES: LegalCase[] = [
@@ -148,14 +150,91 @@ const INITIAL_RETAINERS: ClientRetainerAccount[] = [
   },
 ];
 
+const INITIAL_EVIDENCES: EvidenceItem[] = [
+  {
+    id: "ev-01",
+    caseId: "case-01",
+    codeNumber: "Bukti P-1",
+    title: "Akta Perjanjian Pasokan Baja No. 44 Notaris Siti Rahayu, S.H.",
+    evidenceType: "Akta Otentik (Notariil)",
+    sourceOriginality: "Asli Diperlihatkan",
+    isNazegelenPaid: true,
+    admissibilityStatus: "DITERIMA_HAKIM",
+    description: "Perjanjian konsorsium komersial pengadaan 5.000 ton baja coil bertanggal 15 Mei 2025.",
+    custodianAdvocate: "Prof. Dr. Faisal Hartono, S.H.",
+  },
+  {
+    id: "ev-02",
+    caseId: "case-01",
+    codeNumber: "Bukti P-2",
+    title: "Surat Somasi & Peringatan Kelalaian Wanprestasi No. 102/LEX/VI/2026",
+    evidenceType: "Akta Bawah Tangan",
+    sourceOriginality: "Fotokopi Sesuai Asli (Legalisir)",
+    isNazegelenPaid: true,
+    admissibilityStatus: "DITERIMA_HAKIM",
+    description: "Tanda terima kurir resmi pengiriman somasi pemenuhan kewajiban pengiriman tahap kedua.",
+    custodianAdvocate: "Bagus Wicaksono, S.H.",
+  },
+  {
+    id: "ev-03",
+    caseId: "case-01",
+    codeNumber: "Bukti P-3",
+    title: "Rekam Jejak Transaksi Bank & SWIFT MT103 Pembayaran Uang Muka",
+    evidenceType: "Bukti Elektronik (Email/Chat)",
+    sourceOriginality: "Salinan Elektronik",
+    isNazegelenPaid: true,
+    admissibilityStatus: "DITERIMA_HAKIM",
+    description: "Konfirmasi transfer dana setelmen senilai Rp 15.000.000.000 ke rekening escrow tergugat.",
+    custodianAdvocate: "Prof. Dr. Faisal Hartono, S.H.",
+  },
+];
+
+const INITIAL_PLEADINGS: LegalPleadingDoc[] = [
+  {
+    id: "plead-01",
+    caseId: "case-01",
+    documentType: "Gugatan Wanprestasi",
+    caseNumber: "142/Pdt.G/2026/PN.Jkt.Pst",
+    courtDestination: "Pengadilan Negeri Jakarta Pusat Klas 1A Khusus",
+    plaintiffName: "PT Nusantara Mega Steel Tbk",
+    plaintiffAdvocates: [
+      "Prof. Dr. Faisal Hartono, S.H., LL.M.",
+      "Bagus Wicaksono, S.H.",
+      "Nathalia Siregar, S.H., M.H.",
+    ],
+    defendantName: "Global Industrial Logistics Pte Ltd",
+    positaClauses: [
+      "Bahwa antara Penggugat dan Tergugat telah terikat secara sah dalam Akta Perjanjian Pasokan Baja No. 44 bertanggal 15 Mei 2025 yang dibuat di hadapan Notaris Siti Rahayu, S.H., M.Kn.",
+      "Bahwa Penggugat telah melaksanakan seluruh kewajiban hukumnya dengan membayar lunas uang muka sebesar 30% senilai Rp 13.500.000.000 (tiga belas miliar lima ratus juta rupiah).",
+      "Bahwa hingga batas waktu akhir tanggal 31 Januari 2026, Tergugat sama sekali tidak menyerahkan komoditas baja yang diperjanjikan tanpa adanya alasan keadaan memaksa (force majeure).",
+      "Bahwa Penggugat telah melayangkan 3 (tiga) kali surat peringatan/somasi namun tidak pernah diindahkan oleh Tergugat.",
+    ],
+    petitumClauses: [
+      "Mengabulkan gugatan Penggugat untuk seluruhnya;",
+      "Menyatakan Tergugat telah melakukan perbuatan ingkar janji (wanprestasi);",
+      "Menghukum Tergugat untuk membayar ganti kerugian materiel dan imateriel sebesar Rp 45.000.000.000 (empat puluh lima miliar rupiah) secara tunai dan seketika;",
+      "Menyatakan sah dan berharga Sita Jaminan (Conservatoir Beslag) terhadap aset tanah dan bangunan milik Tergugat di Kawasan Industri MM2100 Cikarang;",
+      "Menghukum Tergugat untuk membayar uang paksa (dwangsom) sebesar Rp 25.000.000 per hari atas setiap hari kelalaian melaksanakan putusan;",
+      "Menyatakan putusan ini dapat dijalankan terlebih dahulu (uitvoerbaar bij voorraad) meskipun ada bantahan, banding, atau kasasi.",
+    ],
+    dwangsomAmountIDR: 25000000,
+    conservatoirBeslagAsset: "Sertifikat Hak Guna Bangunan (SHGB) No. 892/Cikarang Barat seluas 12.000 m²",
+    submissionDate: "2026-02-10",
+    status: "FILED_OFFICIAL",
+  },
+];
+
 interface LegalContextType {
   cases: LegalCase[];
   billables: BillableHourEntry[];
   retainers: ClientRetainerAccount[];
+  evidences: EvidenceItem[];
+  pleadings: LegalPleadingDoc[];
   allHearings: CourtHearing[];
   createCase: (c: Omit<LegalCase, "id" | "hearings">) => void;
   addHearing: (caseId: string, h: Omit<CourtHearing, "id" | "caseId">) => void;
   recordBillableHours: (b: Omit<BillableHourEntry, "id" | "totalBilledIDR" | "isBilled">) => void;
+  addEvidence: (e: Omit<EvidenceItem, "id">) => void;
 }
 
 const LegalContext = createContext<LegalContextType | undefined>(undefined);
@@ -164,13 +243,14 @@ export function LegalProvider({ children }: { children: React.ReactNode }) {
   const [cases, setCases] = useState<LegalCase[]>(INITIAL_CASES);
   const [billables, setBillables] = useState<BillableHourEntry[]>(INITIAL_BILLABLES);
   const [retainers] = useState<ClientRetainerAccount[]>(INITIAL_RETAINERS);
+  const [evidences, setEvidences] = useState<EvidenceItem[]>(INITIAL_EVIDENCES);
+  const [pleadings] = useState<LegalPleadingDoc[]>(INITIAL_PLEADINGS);
 
-  // LocalStorage Sync
   useEffect(() => {
-    const saved = localStorage.getItem("LEXJURIST_CASES");
-    if (saved) {
+    const savedCases = localStorage.getItem("LEXJURIST_CASES");
+    if (savedCases) {
       try {
-        setCases(JSON.parse(saved));
+        setCases(JSON.parse(savedCases));
       } catch (e) {
         console.error(e);
       }
@@ -215,16 +295,27 @@ export function LegalProvider({ children }: { children: React.ReactNode }) {
     setBillables((prev) => [newEntry, ...prev]);
   };
 
+  const addEvidence = (e: Omit<EvidenceItem, "id">) => {
+    const newEv: EvidenceItem = {
+      ...e,
+      id: `ev-${Date.now()}`,
+    };
+    setEvidences((prev) => [...prev, newEv]);
+  };
+
   return (
     <LegalContext.Provider
       value={{
         cases,
         billables,
         retainers,
+        evidences,
+        pleadings,
         allHearings,
         createCase,
         addHearing,
         recordBillableHours,
+        addEvidence,
       }}
     >
       {children}
